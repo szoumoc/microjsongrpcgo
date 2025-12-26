@@ -32,7 +32,3 @@ func MockPricefetcher(ctx context.Context, ticker string) (float64, error) {
 	}
 	return price, nil
 }
-
-func main() {
-	// This is a placeholder for the main function.
-}
