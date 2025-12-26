@@ -7,11 +7,17 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type LoggingService struct {
+type loggingService struct {
 	next Pricefetcher
 }
 
-func (s *LoggingService) FetchPrice(ctx context.Context, ticker string) (price float64, err error) {
+func NewLoggingService(next Pricefetcher) Pricefetcher {
+	return &loggingService{
+		next: next,
+	}
+}
+
+func (s *loggingService) FetchPrice(ctx context.Context, ticker string) (price float64, err error) {
 	defer func(begin time.Time) {
 		logrus.WithFields(logrus.Fields{
 			"took":  time.Since(begin),

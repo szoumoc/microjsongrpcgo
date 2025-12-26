@@ -3,32 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 )
 
-// Pricefetcher is an interface that can fetch a price
-type Pricefetcher interface {
-	FetchPrice(context.Context, string) (float64, error)
-}
-
-// pricefetcher implements the pricefetcher interface
-type priceFetcher struct {
-}
-
-func (s *priceFetcher) FetchPrice(ctx context.Context, ticker string) (float64, error) {
-	return MockPricefetcher(ctx, ticker)
-
-}
-
-var priceMocks = map[string]float64{
-	"BTC": 20_000.0,
-	"ETH": 200.0,
-	"GG":  100_000.0,
-}
-
-func MockPricefetcher(ctx context.Context, ticker string) (float64, error) {
-	price, ok := priceMocks[ticker]
-	if !ok {
-		return price, fmt.Errorf("The given ticker is not supported")
+func main() {
+	svc := NewLoggingService(&priceFetcher{})
+	price, err := svc.FetchPrice(context.Background(), "ETH")
+	if err != nil {
+		log.Fatal(err)
 	}
-	return price, nil
+	fmt.Println(price)
 }
