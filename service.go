@@ -5,22 +5,31 @@ import (
 	"fmt"
 )
 
+// Pricefetcher is an interface that can fetch a price
 type Pricefetcher interface {
 	FetchPrice(context.Context, string) (float64, error)
 }
 
-type priceFetcher struct{}
+// pricefetcher implements the pricefetcher interface
+type priceFetcher struct {
+}
 
 func (s *priceFetcher) FetchPrice(ctx context.Context, ticker string) (float64, error) {
-	prices := map[string]float64{
-		"BTC": 60000.0,
-		"ETH": 3000.0,
-	}
+	fmt.Println("hi just here in service")
+	return MockPricefetcher(ctx, ticker)
 
-	price, ok := prices[ticker]
+}
+
+var priceMocks = map[string]float64{
+	"BTC": 20_000.0,
+	"ETH": 200.0,
+	"GG":  100_000.0,
+}
+
+func MockPricefetcher(ctx context.Context, ticker string) (float64, error) {
+	price, ok := priceMocks[ticker]
 	if !ok {
-		return 0, fmt.Errorf("ticker %s not found", ticker)
+		return price, fmt.Errorf("The given ticker is not supported")
 	}
-
 	return price, nil
 }

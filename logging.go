@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -18,6 +19,7 @@ func NewLoggingService(next Pricefetcher) Pricefetcher {
 }
 
 func (s *loggingService) FetchPrice(ctx context.Context, ticker string) (price float64, err error) {
+	fmt.Println("Hi im here")
 	defer func(begin time.Time) {
 		logrus.WithFields(logrus.Fields{
 			"took":  time.Since(begin),
