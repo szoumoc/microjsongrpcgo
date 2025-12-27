@@ -22,9 +22,10 @@ func (s *loggingService) FetchPrice(ctx context.Context, ticker string) (price f
 	fmt.Println("Hi im here")
 	defer func(begin time.Time) {
 		logrus.WithFields(logrus.Fields{
-			"took":  time.Since(begin),
-			"err":   err,
-			"price": price,
+			"requestID": ctx.Value("requestID"),
+			"took":      time.Since(begin),
+			"err":       err,
+			"price":     price,
 		}).Info("fetchPrice")
 	}(time.Now())
 
