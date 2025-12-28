@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/szoumoc/types"
@@ -19,7 +20,9 @@ func NewClient(endpoint string) *Client {
 }
 
 func (c *Client) FetchPrice(ctx context.Context, ticker string) (*types.PriceResponse, error) {
-	req, err := http.NewRequest("get", c.endpoint, nil)
+	endpoint := fmt.Sprintf("%s?ticker=%s", c.endpoint, ticker)
+
+	req, err := http.NewRequest("get", endpoint, nil)
 	if err != nil {
 		return nil, err
 	}
