@@ -1,55 +1,87 @@
-# Microservice Price Fetcher
+# Pricefetcher Microservice
 
-A simple, robust microservice written in Go that simulates fetching cryptocurrency prices. This project demonstrates basic microservice patterns, including interface-based design and decorator patterns for cross-cutting concerns like logging.
+A professional, layered Go microservice for fetching cryptocurrency prices. This project demonstrates the usage of the **Decorator Pattern**, **Interface-driven design**, and **Request ID tracking** in a clean architecture.
+
+## Architecture
+
+The project is built with a focus on maintainability and extensibility using layers:
+
+1.  **Service Layer (`service.go`)**: Contains the core logic and interfaces. It uses a mock price fetcher with support for BTC, ETH, and GG.
+2.  **Logging Decorator (`logging.go`)**: Wraps the service to provide JSON logging (via `logrus`), request timing, and request ID tracking.
+3.  **Metrics Decorator (`metrics.go`)**: An extensible layer for pushing metrics to monitoring systems like Prometheus.
+4.  **Transport Layer (`api.go`)**: Implements a standard JSON HTTP API.
+5.  **Client package (`client/`)**: A reusable Go client for interacting with the service.
 
 ## Features
 
-- **Price Fetching**: Mock implementation for fetching prices of popular cryptocurrencies (e.g., BTC, ETH).
-- **Logging Middleware**: Uses the decorator pattern to wrap the service with structured logging using `logrus`.
-- **Easy Build & Run**: Includes a `Makefile` for streamlined development.
-
-## Prerequisites
-
-- [Go](https://golang.org/doc/install) (1.18+ recommended)
-- `make` utility
+- **Decorator Pattern**: Seamlessly add logging and metrics without modifying core business logic.
+- **Request ID Tracking**: Context-aware logging that includes unique request IDs.
+- **Mock Data**: Pre-configured prices for testing:
+  - BTC: 20,000.0
+  - ETH: 200.0
+  - GG: 100,000.0
+- **Docker Support**: Ready for containerized deployment.
+- **Makefile**: Simplified build and run commands.
 
 ## Getting Started
 
-### Installation
+### Prerequisites
 
-1. Clone the repository (if applicable) or navigate to the project directory.
-2. Download dependencies:
-   ```bash
-   go mod download
-   ```
+- Go 1.25 or higher
+- Docker (optional)
 
-### Building the Project
+### Running Locally
 
-To build the binary:
+1.  Clone the repository and navigate to the project directory.
+2.  Build and run using the Makefile:
+    ```bash
+    make run
+    ```
+    Alternatively, run directly:
+    ```bash
+    go run . --listenAddr :3000
+    ```
+
+### Running with Docker
+
+1.  Build the image:
+    ```bash
+    docker build -t pricefetcher .
+    ```
+2.  Run the container:
+    ```bash
+    docker run -p 3000:3000 pricefetcher
+    ```
+
+## API Usage
+
+### Fetch Price
+
+**Endpoint**: `GET /?ticker={ticker}`
+
+**Example**:
 ```bash
-make build
-```
-This will create a binary named `pricefetcher` in the `bin/` directory.
-
-### Running the Project
-
-To build and run the service in one command:
-```bash
-make run
+curl "http://localhost:3000/?ticker=BTC"
 ```
 
-## Project Structure
+**Response**:
+```json
+{"ticker":"BTC","price":20000}
+```
 
-- `main.go`: Entry point of the application.
-- `service.go`: Contains the `Pricefetcher` interface and its implementation.
-- `logging.go`: Implements the logging middleware for the service.
-- `Makefile`: Contains build and run scripts.
-- `go.mod` / `go.sum`: Go module dependency files.
+## Using the Go Client
 
-## Example Output
+You can use the built-in client package in your other Go projects:
 
-When running the service, you should see output similar to this:
-```text
-INFO[0000] fetchPrice                                    err="<nil>" price=3000 took="18.5µs"
-3000
+```go
+import "github.com/szoumoc/client"
+
+func main() {
+    c := client.New("http://localhost:3000/")
+    price, err := c.FetchPrice(context.Background(), "ETH")
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Printf("Price: %+v\n", price)
+}
 ```
