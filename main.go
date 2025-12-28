@@ -5,7 +5,15 @@ import (
 )
 
 func main() {
-	listenAddr := flag.String("listenAddr", ":3000", "lsiten address the service is running")
+	// client := client.New("http://localhost:3000/")
+
+	// price, err := client.FetchPrice(context.Background(), "ETH")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// fmt.Printf("%+v\n", price)
+	// return
+	listenAddr := flag.String("listenAddr", ":3000", "listen address the service is running")
 	flag.Parse()
 	svc := NewLoggingService(NewMetricService(&priceFetcher{}))
 
