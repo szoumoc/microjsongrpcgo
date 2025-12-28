@@ -2,6 +2,8 @@ package client
 
 import (
 	"context"
+	"encoding/json"
+	"net/http"
 
 	"github.com/szoumoc/types"
 )
@@ -17,5 +19,17 @@ func NewClient(endpoint string) *Client {
 }
 
 func (c *Client) FetchPrice(ctx context.Context, ticker string) (*types.PriceResponse, error) {
-	return nil, nil
+	req, err := http.NewRequest("get", c.endpoint, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	priceResp := new(types.PriceResponse)
+	if err := json.NewDecoder(resp.Body).Decode(priceResp); err != nil {
+		return nil, err
+	}
+	return priceResp, nil
 }
